@@ -1,2 +1,5 @@
 dist
 node_modules
+# Open Design-extracted artifacts — formatting is owned by the extractor
+src/design/ember.css
+src/design/page-styles.css

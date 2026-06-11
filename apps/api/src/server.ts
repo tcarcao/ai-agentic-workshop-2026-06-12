@@ -1,8 +1,19 @@
 import { Hono } from "hono";
 import { setCookie, getCookie, deleteCookie } from "hono/cookie";
+import type {
+  SignupRequest,
+  ConfirmRequest,
+  LoginRequest,
+  PlaceOrderRequest,
+  ClaimOrdersRequest,
+} from "@workshop/shared";
 import { ordering as defaultOrdering } from "./modules/ordering/container.js";
 import { accounts as defaultAccounts } from "./modules/accounts/container.js";
-import { EmptyOrderError, UnknownMenuItemError } from "./modules/ordering/domain/order.js";
+import {
+  EmptyOrderError,
+  UnknownMenuItemError,
+  InvalidQuantityError,
+} from "./modules/ordering/domain/order.js";
 import {
   InvalidEmailError,
   WeakPasswordError,
@@ -41,8 +52,11 @@ export function createApp(
   });
 
   // --- auth routes ---
+  // Request bodies are typed as Partial<contract type> from @workshop/shared:
+  // the field NAMES are compile-checked against the contract (a rename breaks both
+  // sides at once), while Partial<> stays honest about unvalidated runtime JSON.
   app.post("/api/auth/signup", async (c) => {
-    const body = await c.req.json<{ email?: string; password?: string }>();
+    const body = await c.req.json<Partial<SignupRequest>>();
     try {
       const res = await accounts.signup({ email: body.email ?? "", password: body.password ?? "" });
       return c.json(res, 201);
@@ -54,7 +68,7 @@ export function createApp(
   });
 
   app.post("/api/auth/confirm", async (c) => {
-    const body = await c.req.json<{ email?: string; code?: string }>();
+    const body = await c.req.json<Partial<ConfirmRequest>>();
     try {
       const user = await accounts.confirmEmail({ email: body.email ?? "", code: body.code ?? "" });
       return c.json({ user });
@@ -66,7 +80,7 @@ export function createApp(
   });
 
   app.post("/api/auth/login", async (c) => {
-    const body = await c.req.json<{ email?: string; password?: string }>();
+    const body = await c.req.json<Partial<LoginRequest>>();
     try {
       const { token, user } = await accounts.login({
         email: body.email ?? "",
@@ -124,10 +138,7 @@ export function createApp(
 
   // POST /api/orders
   app.post("/api/orders", async (c) => {
-    const body = await c.req.json<{
-      customer?: string;
-      items?: { menuItemId: string; quantity: number }[];
-    }>();
+    const body = await c.req.json<Partial<PlaceOrderRequest>>();
     try {
       const result = await ordering.placeOrder({
         customer: body.customer ?? "",
@@ -136,7 +147,11 @@ export function createApp(
       });
       return c.json(result, 201);
     } catch (e) {
-      if (e instanceof EmptyOrderError || e instanceof UnknownMenuItemError) {
+      if (
+        e instanceof EmptyOrderError ||
+        e instanceof UnknownMenuItemError ||
+        e instanceof InvalidQuantityError
+      ) {
         return c.json({ error: (e as Error).message }, 400);
       }
       throw e;
@@ -160,7 +175,7 @@ export function createApp(
   app.post("/api/me/orders/claim", async (c) => {
     const userId = c.get("userId");
     if (!userId) return c.json({ error: "Not authenticated" }, 401);
-    const { orderIds } = await c.req.json<{ orderIds?: string[] }>();
+    const { orderIds } = await c.req.json<Partial<ClaimOrdersRequest>>();
     await ordering.claimOrders(orderIds ?? [], userId);
     return c.json(await ordering.listUserOrders(userId));
   });

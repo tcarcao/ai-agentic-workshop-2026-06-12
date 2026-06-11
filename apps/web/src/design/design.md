@@ -2,7 +2,7 @@
 
 **A precise, late-night kitchen pass.** Dark, cinematic, confident, cool. Food glows against a blue-obsidian canvas; a teal ember does the talking, with an orange spark as the secondary accent; Inter is clean and editorial, JetBrains Mono keeps numbers honest. This is a brand, not a UI kit exercise.
 
-All tokens below are exposed as CSS custom properties on `:root` in `assets/ember.css`.
+All tokens below are exposed as CSS custom properties on `:root` in `ember.css` (this directory).
 
 ---
 

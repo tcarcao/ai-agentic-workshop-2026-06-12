@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { makePlaceOrder } from "./placeOrder.js";
-import { EmptyOrderError } from "../domain/order.js";
+import { EmptyOrderError, UnknownMenuItemError, InvalidQuantityError } from "../domain/order.js";
 import type { RestaurantRepository, OrderRepository } from "./ports.js";
 import type { MenuItem } from "../domain/entities.js";
 
@@ -71,6 +71,26 @@ describe("placeOrder", () => {
     await expect(placeOrder({ customer: "Ana", items: [] })).rejects.toBeInstanceOf(
       EmptyOrderError,
     );
+  });
+
+  it("rejects an order containing an unknown menu item", async () => {
+    const { repo, saved } = fakeOrders();
+    const placeOrder = makePlaceOrder(fakeRestaurants, repo);
+    await expect(
+      placeOrder({ customer: "Ana", items: [{ menuItemId: "nope", quantity: 1 }] }),
+    ).rejects.toBeInstanceOf(UnknownMenuItemError);
+    expect(saved.value).toBeUndefined();
+  });
+
+  it("rejects a non-positive or fractional quantity instead of mispricing the order", async () => {
+    const { repo, saved } = fakeOrders();
+    const placeOrder = makePlaceOrder(fakeRestaurants, repo);
+    for (const quantity of [0, -2, 1.5]) {
+      await expect(
+        placeOrder({ customer: "Ana", items: [{ menuItemId: "m1", quantity }] }),
+      ).rejects.toBeInstanceOf(InvalidQuantityError);
+    }
+    expect(saved.value).toBeUndefined();
   });
 
   it("defaults a blank customer to Guest", async () => {

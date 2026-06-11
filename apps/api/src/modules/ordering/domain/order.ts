@@ -15,10 +15,22 @@ export class UnknownMenuItemError extends Error {
   }
 }
 
+export class InvalidQuantityError extends Error {
+  constructor(menuItemId: string, quantity: number) {
+    super(`Invalid quantity ${quantity} for menu item ${menuItemId}: must be a whole number ≥ 1`);
+    this.name = "InvalidQuantityError";
+  }
+}
+
 export function calculateOrderTotal(lines: OrderLine[]): number {
   return sumLines(lines);
 }
 
 export function assertOrderIsPlaceable(lines: OrderLine[]): void {
   if (lines.length === 0) throw new EmptyOrderError();
+  for (const l of lines) {
+    if (!Number.isInteger(l.quantity) || l.quantity < 1) {
+      throw new InvalidQuantityError(l.menuItemId, l.quantity);
+    }
+  }
 }
