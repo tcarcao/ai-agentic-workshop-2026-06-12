@@ -1,0 +1,25 @@
+{
+  "name": "tableside-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*", "e2e"],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev -w apps/api",
+    "dev:web": "npm run dev -w apps/web",
+    "build": "npm run build -w apps/api && npm run build -w apps/web",
+    "test": "npm run test --workspaces --if-present",
+    "db:setup": "npm run db:migrate -w apps/api && npm run db:seed -w apps/api",
+    "db:migrate": "npm run db:migrate -w apps/api",
+    "db:seed": "npm run db:seed -w apps/api",
+    "db:reset": "npm run db:reset -w apps/api",
+    "lint": "npm run lint --workspaces --if-present",
+    "format:check": "npm run format:check --workspaces --if-present",
+    "arch:check": "npm run arch:check --workspaces --if-present",
+    "e2e": "npm run e2e -w @workshop/e2e",
+    "e2e:ui": "npm run e2e:ui -w @workshop/e2e"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

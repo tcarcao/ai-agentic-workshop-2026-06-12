@@ -1,0 +1,38 @@
+@import "./design/ember.css";
+@import "./design/page-styles.css";
+
+/* Ember brand — dark-first, cinematic, warm.
+   All tokens, components and layout classes come from ember.css.
+   Page-level layouts (hero, cart-grid, confirm) from page-styles.css.
+   This file adds only the thin React-app-level overrides. */
+
+* {
+  box-sizing: border-box;
+}
+
+/* Logo: flame mark + wordmark */
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.wordmark__mark {
+  flex: none;
+  filter: drop-shadow(0 0 7px rgba(94, 224, 192, 0.4));
+}
+.linklike {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--color-ember);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.account__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: var(--fs-44);
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-6);
+}

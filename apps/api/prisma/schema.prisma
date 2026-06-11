@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Restaurant {
+  id               String     @id @default(cuid())
+  name             String
+  cuisine          String
+  imageUrl         String
+  ratingAvg        Float      @default(0)
+  ratingCount      Int        @default(0)
+  deliveryMinutes  Int        @default(30)
+  deliveryFeeCents Int        @default(0)
+  priceLevel       Int        @default(2)
+  description      String     @default("")
+  menuItems        MenuItem[]
+}
+
+model MenuItem {
+  id           String      @id @default(cuid())
+  name         String
+  description  String
+  priceCents   Int
+  dietaryTags  String      // comma-separated: "vegetarian,vegan,gluten-free"
+  imageUrl     String      @default("")
+  category     String      @default("Mains")
+  popular      Boolean     @default(false)
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+  orderItems   OrderItem[]
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  createdAt  DateTime    @default(now())
+  customer   String
+  totalCents Int
+  items      OrderItem[]
+  user       User?       @relation(fields: [userId], references: [id])
+  userId     String?
+}
+
+model OrderItem {
+  id         String   @id @default(cuid())
+  quantity   Int
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String
+  order      Order    @relation(fields: [orderId], references: [id])
+  orderId    String
+}
+
+model User {
+  id               String     @id @default(cuid())
+  email            String     @unique
+  passwordHash     String
+  confirmed        Boolean    @default(false)
+  confirmationCode String     @default("")
+  createdAt        DateTime   @default(now())
+  orders           Order[]
+}

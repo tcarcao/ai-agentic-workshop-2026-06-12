@@ -1,0 +1,856 @@
+/* ============================================================
+   EMBER — brand-grade design system
+   Dark-first, cinematic, warm. One source of truth.
+   ============================================================ */
+
+/* ---------- 1. TOKENS ------------------------------------- */
+:root {
+  /* Surfaces */
+  --color-bg: #0E1116; /* obsidian canvas, not pure black */
+  --color-surface: #161B22; /* cards */
+  --color-elevated: #1C232C; /* modals, drawers, sheets */
+  --color-border: #2A323C; /* hairlines */
+
+  /* Brand */
+  --color-ember: #5EE0C0; /* PRIMARY — CTAs, price, active state */
+  --color-gold: #F0883E; /* stars, hover glow, secondary accent */
+  --color-on-ember: #06231E; /* text ON ember-colored surfaces (badges, CTAs) */
+  --color-ember-deep: #3FB89E; /* darker ember shade — used in celebration sparks */
+
+  /* Text */
+  --color-text: #E9EEF3; /* warm off-white, never pure white */
+  --color-text-muted: #8B949E;
+
+  /* Status */
+  --color-success: #5ED08A;
+  --color-danger: #F47174;
+
+  /* Dietary — fills at ~15% opacity, matching solid text */
+  --color-vegan: #5ED08A;
+  --color-spicy: #F47174;
+  --color-gf: #6c9ee0;
+  --fill-vegan: rgba(76, 175, 125, 0.15);
+  --fill-spicy: rgba(224, 82, 82, 0.15);
+  --fill-gf: rgba(108, 158, 224, 0.15);
+
+  /* Type families */
+  --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Inter", -apple-system, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Type scale */
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-18: 18px;
+  --fs-24: 24px;
+  --fs-32: 32px;
+  --fs-44: 44px;
+  --fs-64: 64px;
+  --lh-display: 1.1;
+  --lh-body: 1.5;
+
+  /* Spacing — 4px base */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Radius */
+  --radius-card: 16px;
+  --radius-input: 12px;
+  --radius-pill: 999px;
+  --radius-modal: 24px;
+
+  /* Elevation — warm glow, never harsh grey shadow */
+  --glow-ember: 0 4px 24px rgba(94, 224, 192, 0.12);
+  --glow-ember-strong: 0 8px 36px rgba(94, 224, 192, 0.22);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.7);
+
+  /* Motion */
+  --dur-fast: 180ms;
+  --dur: 240ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1); /* ease-out, no bounce */
+}
+
+/* ---------- 2. RESET / BASE ------------------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--fs-16);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* warm ambient wash so the obsidian canvas feels lit, not flat */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(60% 50% at 80% -5%, rgba(94, 224, 192, 0.1), transparent 70%),
+    radial-gradient(50% 40% at 0% 100%, rgba(240, 136, 62, 0.05), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+::selection {
+  background: rgba(94, 224, 192, 0.35);
+  color: #fff;
+}
+
+/* ---------- 3. TYPOGRAPHY --------------------------------- */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: var(--lh-display);
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ember);
+}
+.muted {
+  color: var(--color-text-muted);
+}
+
+/* ---------- 4. LAYOUT ------------------------------------- */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- 5. BUTTONS ------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--fs-14);
+  padding: 0 var(--space-5);
+  height: 44px;
+  border-radius: var(--radius-pill);
+  transition:
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+  white-space: nowrap;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--primary {
+  background: var(--color-ember);
+  color: #06231E;
+  font-weight: 700;
+  box-shadow: var(--glow-ember);
+}
+.btn--primary:hover {
+  box-shadow: var(--glow-ember-strong);
+  transform: translateY(-1px);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+.btn--secondary:hover {
+  border-color: var(--color-ember);
+  color: var(--color-gold);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+}
+.btn--ghost:hover {
+  color: var(--color-text);
+}
+
+.btn--block {
+  width: 100%;
+  height: 56px;
+  font-size: var(--fs-16);
+}
+
+.btn:disabled,
+.btn--disabled {
+  background: var(--color-elevated);
+  color: var(--color-text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  border-color: transparent;
+  opacity: 0.6;
+}
+.btn:disabled:hover,
+.btn--disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ---------- 6. CINEMATIC FOOD "PHOTOGRAPHY" --------------- */
+/* Warm spotlight glow on dark — food appears to be lit in a dining room.
+   Drop in a real <img> and it inherits the same frame + bottom gradient. */
+.photo {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-elevated);
+  border-radius: var(--radius-card);
+  isolation: isolate;
+}
+.photo > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo--16x9 {
+  aspect-ratio: 16 / 9;
+}
+.photo--1x1 {
+  aspect-ratio: 1 / 1;
+}
+
+/* generated warm placeholder — a plate lit from above */
+.photo--ph::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      42% 38% at 50% 38%,
+      rgba(240, 136, 62, 0.55),
+      rgba(94, 224, 192, 0.22) 45%,
+      transparent 72%
+    ),
+    radial-gradient(80% 90% at 50% 120%, #122019, transparent 60%),
+    linear-gradient(160deg, #14201d, #0c1411 70%);
+  filter: saturate(1.1);
+}
+/* per-dish hue rotation so a grid doesn't look uniform */
+.photo--h1::before {
+  filter: hue-rotate(-12deg) saturate(1.15);
+}
+.photo--h2::before {
+  filter: hue-rotate(18deg) saturate(1.05);
+}
+.photo--h3::before {
+  filter: hue-rotate(-28deg) saturate(1.2);
+}
+.photo--h4::before {
+  filter: hue-rotate(40deg) saturate(0.95);
+}
+.photo--h5::before {
+  filter: hue-rotate(8deg) saturate(1.25);
+}
+
+/* faint utensil mark, centred — tasteful, no emoji */
+.photo--ph::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    /* bottom legibility gradient for overlaid text */ linear-gradient(
+    to top,
+    rgba(14,17,22, 0.92) 0%,
+    rgba(14,17,22, 0.55) 22%,
+    transparent 52%
+  );
+}
+/* when a photo wraps overlay text, add this for the gradient without placeholder glow */
+.photo--scrim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgba(14,17,22, 0.92) 0%,
+    rgba(14,17,22, 0.5) 24%,
+    transparent 55%
+  );
+}
+.photo__label {
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 2;
+}
+
+/* ---------- 7. RESTAURANT CARD ---------------------------- */
+.r-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.r-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--glow-ember-strong);
+  border-color: rgba(94, 224, 192, 0.4);
+}
+.r-card .photo {
+  border-radius: 0;
+}
+.r-card__body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.r-card__name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-24);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.r-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  font-size: var(--fs-14);
+}
+.r-card__dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+}
+
+/* featured — confident editorial name cropping the photo edge */
+.r-card--featured {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.r-card--featured .photo--16x9 {
+  aspect-ratio: 16 / 10;
+}
+.r-card--featured .r-card__overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  padding: var(--space-8);
+}
+.r-card--featured .r-card__name {
+  font-size: clamp(40px, 4.4vw, 64px);
+  font-weight: 900;
+  /* let the name run wide and crop the card edge with confidence */
+  margin-right: -8px;
+}
+
+/* ---------- 8. MENU ITEM CARD (horizontal) ---------------- */
+.m-item {
+  display: grid;
+  grid-template-columns: 104px 1fr auto;
+  gap: var(--space-5);
+  align-items: center;
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.m-item:last-child {
+  border-bottom: none;
+}
+.m-item .photo {
+  width: 104px;
+}
+.m-item__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-18);
+  letter-spacing: -0.01em;
+}
+.m-item__desc {
+  color: var(--color-text-muted);
+  font-size: var(--fs-14);
+  margin-top: var(--space-1);
+  max-width: 46ch;
+}
+.m-item__tags {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.m-item__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+/* ---------- 9. TAGS / DIETARY PILLS ----------------------- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-11);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
+.tag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.tag--vegan {
+  background: var(--fill-vegan);
+  color: var(--color-vegan);
+}
+.tag--spicy {
+  background: var(--fill-spicy);
+  color: var(--color-spicy);
+}
+.tag--gf {
+  background: var(--fill-gf);
+  color: var(--color-gf);
+}
+.tag--cuisine {
+  background: var(--color-elevated);
+  color: var(--color-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--font-body);
+}
+.tag--cuisine::before {
+  display: none;
+}
+
+/* ---------- 10. PRICE / STARS ----------------------------- */
+.price {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--color-gold);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-18);
+  letter-spacing: -0.01em;
+}
+.price--lg {
+  font-size: var(--fs-24);
+}
+.price--ember {
+  color: var(--color-ember);
+}
+
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-14);
+}
+.stars__glyphs {
+  position: relative;
+  display: inline-block;
+  font-size: var(--fs-14);
+  line-height: 1;
+  letter-spacing: 1px;
+}
+.stars__glyphs .bg {
+  color: var(--color-border);
+}
+.stars__glyphs .fg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--color-gold);
+}
+.stars__num {
+  font-family: var(--font-mono);
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+.stars__count {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ---------- 11. INPUT (floating label) -------------------- */
+.field {
+  position: relative;
+}
+.field input {
+  width: 100%;
+  height: 56px;
+  padding: 22px var(--space-4) 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: var(--fs-16);
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+.field input:focus {
+  outline: none;
+  border-color: var(--color-ember);
+  box-shadow: 0 0 0 3px rgba(94, 224, 192, 0.18);
+}
+.field label {
+  position: absolute;
+  left: var(--space-4);
+  top: 18px;
+  color: var(--color-text-muted);
+  font-size: var(--fs-16);
+  pointer-events: none;
+  transition: all var(--dur-fast) var(--ease);
+}
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label {
+  top: 9px;
+  font-size: var(--fs-11);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-ember);
+  font-family: var(--font-mono);
+}
+
+/* ---------- 12. ADD / STEPPER (morph) --------------------- */
+.add {
+  --h: 40px;
+  height: var(--h);
+  border-radius: var(--radius-pill);
+  background: var(--color-ember);
+  color: #06231E;
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: var(--glow-ember);
+  transition:
+    width var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+  width: var(--h);
+}
+.add:hover {
+  box-shadow: var(--glow-ember-strong);
+}
+.add.is-active {
+  width: 116px;
+}
+.add__plus {
+  width: var(--h);
+  height: var(--h);
+  flex: 0 0 var(--h);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 700;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.add__stepper {
+  display: flex;
+  align-items: center;
+  width: 116px;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.add.is-active .add__plus {
+  display: none;
+}
+.add.is-active .add__stepper {
+  opacity: 1;
+}
+.add__btn {
+  width: var(--h);
+  height: var(--h);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+.add__btn:active {
+  background: rgba(0, 0, 0, 0.12);
+}
+.add__qty {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-16);
+}
+
+/* ---------- 13. CART BADGE -------------------------------- */
+.cart-badge {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+}
+.cart-badge__count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background: var(--color-ember);
+  color: #06231E;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--fs-11);
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--color-bg);
+  transition: transform var(--dur) var(--ease);
+}
+.pop {
+  animation: pop var(--dur) var(--ease);
+}
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ---------- 14. STICKY HEADER ----------------------------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(14,17,22, 0.72);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid var(--color-border);
+}
+.site-header__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  height: 72px;
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: var(--fs-24);
+  letter-spacing: -0.03em;
+}
+.wordmark .ember {
+  color: var(--color-ember);
+}
+.loc {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-input);
+  border: 1px solid var(--color-border);
+  font-size: var(--fs-14);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.loc:hover {
+  border-color: var(--color-ember);
+}
+.loc__city {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* ---------- 15. FLOATING CART BAR ------------------------- */
+.cart-bar {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-6);
+  transform: translateX(-50%);
+  z-index: 60;
+  width: min(560px, calc(100% - 32px));
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-6);
+  box-shadow: var(--shadow-modal);
+  animation: slideUp var(--dur) var(--ease);
+}
+.cart-bar__meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.cart-bar__count {
+  font-size: var(--fs-12);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+.cart-bar__total {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-18);
+  color: var(--color-gold);
+}
+.cart-bar .btn {
+  margin-left: auto;
+}
+
+/* ---------- 16. SECTION NAV ------------------------------- */
+.sec-nav {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: var(--space-3) 0;
+  scrollbar-width: none;
+}
+.sec-nav::-webkit-scrollbar {
+  display: none;
+}
+.sec-nav a {
+  flex: 0 0 auto;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  border: 1px solid transparent;
+  transition: all var(--dur-fast) var(--ease);
+}
+.sec-nav a.is-active {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+.sec-nav a:hover {
+  color: var(--color-text);
+}
+
+/* ---------- 17. MOTION: arrive ---------------------------- */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- 18. RESPONSIVE -------------------------------- */
+@media (max-width: 900px) {
+  .r-card--featured {
+    grid-column: span 2;
+    grid-row: auto;
+  }
+  .r-card--featured .r-card__name {
+    font-size: clamp(34px, 8vw, 48px);
+  }
+}
+@media (max-width: 640px) {
+  .wrap {
+    padding: 0 var(--space-4);
+  }
+  .site-header__row {
+    gap: var(--space-3);
+    height: 64px;
+  }
+  .m-item {
+    grid-template-columns: 84px 1fr;
+    grid-template-areas: "photo body" "photo right";
+    gap: var(--space-3) var(--space-4);
+  }
+  .m-item .photo {
+    grid-area: photo;
+    align-self: start;
+  }
+  .m-item__right {
+    grid-area: right;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

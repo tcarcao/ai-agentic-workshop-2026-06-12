@@ -1,0 +1,6 @@
+/**
+ * Ember design tokens — replaced Cafe system.
+ * The real tokens live in ember.css (:root custom properties).
+ * This file is kept for import-path compatibility only.
+ * @see ./ember.css
+ */

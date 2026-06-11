@@ -1,0 +1,16 @@
+{
+  "name": "@workshop/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "node setup-e2e-db.mjs && bddgen && playwright test",
+    "e2e:ui": "node setup-e2e-db.mjs && bddgen && playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.45.0",
+    "playwright-bdd": "^8.0.0",
+    "@workshop/shared": "*",
+    "@types/node": "^20"
+  }
+}
