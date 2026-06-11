@@ -194,6 +194,14 @@ export function OrderConfirmation({ order }: { order: Order }) {
                 <span className="price">{formatCents(l.priceCents * l.quantity)}</span>
               </div>
             ))}
+            {order.discountCents > 0 && (
+              <div className="row">
+                <span>Discount ({order.promoCode})</span>
+                <span className="price" style={{ color: "var(--color-success)" }}>
+                  −{formatCents(order.discountCents)}
+                </span>
+              </div>
+            )}
             <div className="row row--total">
               <span>Total</span>
               <span className="price price--lg">{formatCents(order.totalCents)}</span>

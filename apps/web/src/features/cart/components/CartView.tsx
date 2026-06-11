@@ -12,11 +12,24 @@ function photoHue(id: string): string {
   return `photo--h${(n % 5) + 1}`;
 }
 
+// Client-side preview of the promo discount. The server is still the source of
+// truth (it recomputes the discount in the placeOrder use case); this only drives
+// the cart preview line.
+function previewDiscount(code: string, subtotalCents: number): number {
+  const normalized = code.trim().toUpperCase();
+  let discount = 0;
+  if (normalized === "SAVE10") discount = Math.floor(subtotalCents * 0.1);
+  else if (normalized === "SAVE5") discount = 500;
+  return Math.max(0, Math.min(discount, subtotalCents));
+}
+
 export function CartView() {
   const { lines, add, remove, clear } = useCart();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState("");
 
   async function checkout() {
     setSubmitting(true);
@@ -24,6 +37,7 @@ export function CartView() {
       const result = await placeOrder({
         customer,
         items: lines.map((l) => ({ menuItemId: l.menuItemId, quantity: l.quantity })),
+        promoCode: appliedPromo || undefined,
       });
       // Persist order id for Orders history page
       try {
@@ -42,7 +56,13 @@ export function CartView() {
   }
 
   const subtotal = sumLines(lines);
-  const total = subtotal;
+  const discount = appliedPromo ? previewDiscount(appliedPromo, subtotal) : 0;
+  const promoInvalid = appliedPromo !== "" && discount === 0;
+  const total = Math.max(0, subtotal - discount);
+
+  function applyPromo() {
+    setAppliedPromo(promoInput.trim().toUpperCase());
+  }
 
   if (lines.length === 0) {
     return (
@@ -167,10 +187,54 @@ export function CartView() {
           </span>
         </div>
 
+        {discount > 0 && (
+          <div className="row">
+            <span>Discount ({appliedPromo})</span>
+            <span className="amt" style={{ color: "var(--color-success)" }}>
+              −{formatCents(discount)}
+            </span>
+          </div>
+        )}
+
         <div className="row row--total">
           <span>Total</span>
           <span className="amt">{formatCents(total)}</span>
         </div>
+
+        {/* Promo code input + Apply */}
+        <div
+          style={{
+            marginTop: "var(--space-6)",
+            display: "flex",
+            gap: "var(--space-3)",
+            alignItems: "flex-start",
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <Input
+              label="Promo code"
+              value={promoInput}
+              onChange={(e) => setPromoInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && applyPromo()}
+            />
+          </div>
+          <button
+            className="btn btn--secondary"
+            type="button"
+            onClick={applyPromo}
+            disabled={!promoInput.trim()}
+          >
+            Apply
+          </button>
+        </div>
+        {promoInvalid && (
+          <p
+            className="muted"
+            style={{ color: "var(--color-danger)", fontSize: "var(--fs-12)", marginTop: "var(--space-2)" }}
+          >
+            That code isn't valid.
+          </p>
+        )}
 
         {/* Customer name input */}
         <div style={{ marginTop: "var(--space-6)" }}>

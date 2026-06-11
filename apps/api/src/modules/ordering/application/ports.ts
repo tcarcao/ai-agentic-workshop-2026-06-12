@@ -10,6 +10,8 @@ export interface OrderRepository {
   create(order: {
     customer: string;
     totalCents: number;
+    promoCode: string;
+    discountCents: number;
     lines: { menuItemId: string; quantity: number }[];
     userId?: string | null;
   }): Promise<string>;

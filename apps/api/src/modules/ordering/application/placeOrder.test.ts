@@ -35,7 +35,14 @@ const fakeRestaurants: RestaurantRepository = {
 
 function fakeOrders() {
   const saved: {
-    value?: { customer: string; totalCents: number; lines: unknown[]; userId: string | null };
+    value?: {
+      customer: string;
+      totalCents: number;
+      promoCode: string;
+      discountCents: number;
+      lines: unknown[];
+      userId: string | null;
+    };
   } = {};
   const repo: OrderRepository = {
     create: async (o) => {
@@ -112,5 +119,39 @@ describe("placeOrder", () => {
     const placeOrder = makePlaceOrder(fakeRestaurants, repo);
     await placeOrder({ customer: "Ana", items: [{ menuItemId: "m1", quantity: 1 }] });
     expect(saved.value?.userId).toBeNull();
+  });
+
+  it("applies a SAVE10 promo code server-side and stores the discount", async () => {
+    const { repo, saved } = fakeOrders();
+    const placeOrder = makePlaceOrder(fakeRestaurants, repo);
+    // subtotal = 900*2 + 400 = 2200 → 10% = 220 off → total 1980
+    const res = await placeOrder({
+      customer: "Ana",
+      promoCode: "SAVE10",
+      items: [
+        { menuItemId: "m1", quantity: 2 },
+        { menuItemId: "m2", quantity: 1 },
+      ],
+    });
+    expect(res.discountCents).toBe(220);
+    expect(res.totalCents).toBe(1980);
+    expect(res.promoCode).toBe("SAVE10");
+    expect(saved.value?.discountCents).toBe(220);
+    expect(saved.value?.totalCents).toBe(1980);
+    expect(saved.value?.promoCode).toBe("SAVE10");
+  });
+
+  it("ignores an unknown promo code (no discount, no error)", async () => {
+    const { repo, saved } = fakeOrders();
+    const placeOrder = makePlaceOrder(fakeRestaurants, repo);
+    const res = await placeOrder({
+      customer: "Ana",
+      promoCode: "NOPE",
+      items: [{ menuItemId: "m1", quantity: 1 }],
+    });
+    expect(res.discountCents).toBe(0);
+    expect(res.totalCents).toBe(900);
+    expect(res.promoCode).toBe("");
+    expect(saved.value?.discountCents).toBe(0);
   });
 });

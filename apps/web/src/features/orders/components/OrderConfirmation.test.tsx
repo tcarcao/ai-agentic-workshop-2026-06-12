@@ -16,6 +16,8 @@ const order: Order = {
   customer: "Ana",
   createdAt: new Date("2026-06-10T12:00:00Z").toISOString(),
   totalCents: 2200,
+  promoCode: "",
+  discountCents: 0,
   userId: null,
   lines: [
     { menuItemId: "m1", name: "Pizza", priceCents: 900, quantity: 2 },

@@ -2,6 +2,7 @@ import type { RestaurantRepository, OrderRepository } from "./ports.js";
 import {
   assertOrderIsPlaceable,
   calculateOrderTotal,
+  discountFor,
   UnknownMenuItemError,
 } from "../domain/order.js";
 import type { OrderLine } from "../domain/entities.js";
@@ -9,13 +10,14 @@ import type { OrderLine } from "../domain/entities.js";
 export interface PlaceOrderInput {
   customer: string;
   items: { menuItemId: string; quantity: number }[];
+  promoCode?: string;
   userId?: string | null;
 }
 
 export function makePlaceOrder(restaurants: RestaurantRepository, orders: OrderRepository) {
   return async function placeOrder(
     input: PlaceOrderInput,
-  ): Promise<{ id: string; totalCents: number }> {
+  ): Promise<{ id: string; totalCents: number; promoCode: string; discountCents: number }> {
     const menuItems = await restaurants.findMenuItems(input.items.map((i) => i.menuItemId));
     const byId = new Map(menuItems.map((m) => [m.id, m]));
 
@@ -31,15 +33,23 @@ export function makePlaceOrder(restaurants: RestaurantRepository, orders: OrderR
     });
 
     assertOrderIsPlaceable(lines);
-    const totalCents = calculateOrderTotal(lines);
+    const subtotalCents = calculateOrderTotal(lines);
+
+    // Discount is decided server-side — never trust a client-sent amount.
+    const discountCents = discountFor(input.promoCode, subtotalCents);
+    const promoCode = discountCents > 0 ? (input.promoCode ?? "").trim().toUpperCase() : "";
+    const totalCents = Math.max(0, subtotalCents - discountCents);
+
     const customer = input.customer.trim() || "Guest";
 
     const id = await orders.create({
       customer,
       totalCents,
+      promoCode,
+      discountCents,
       userId: input.userId ?? null,
       lines: lines.map((l) => ({ menuItemId: l.menuItemId, quantity: l.quantity })),
     });
-    return { id, totalCents };
+    return { id, totalCents, promoCode, discountCents };
   };
 }

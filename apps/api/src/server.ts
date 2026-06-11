@@ -4,7 +4,6 @@ import type {
   SignupRequest,
   ConfirmRequest,
   LoginRequest,
-  PlaceOrderRequest,
   ClaimOrdersRequest,
 } from "@workshop/shared";
 import { ordering as defaultOrdering } from "./modules/ordering/container.js";
@@ -147,11 +146,18 @@ export function createApp(
 
   // POST /api/orders
   app.post("/api/orders", async (c) => {
-    const body = await c.req.json<Partial<PlaceOrderRequest>>();
+    const body = await c.req.json<{
+      customer?: string;
+      items?: { menuItemId: string; quantity: number }[];
+      promo?: string;
+    }>();
+    // The promo code from the cart is forwarded to the use case, which decides the discount.
+    const promoCode = body.promo;
     try {
       const result = await ordering.placeOrder({
         customer: body.customer ?? "",
         items: body.items ?? [],
+        promoCode,
         userId: c.get("userId"),
       });
       return c.json(result, 201);

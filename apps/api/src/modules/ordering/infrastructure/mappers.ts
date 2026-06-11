@@ -68,6 +68,8 @@ export function toOrder(row: {
   customer: string;
   createdAt: Date;
   totalCents: number;
+  promoCode: string;
+  discountCents: number;
   userId: string | null;
   items: { menuItemId: string; quantity: number; menuItem: { name: string; priceCents: number } }[];
 }): Order {
@@ -82,6 +84,8 @@ export function toOrder(row: {
     customer: row.customer,
     createdAt: row.createdAt,
     totalCents: row.totalCents,
+    promoCode: row.promoCode,
+    discountCents: row.discountCents,
     userId: row.userId,
     lines,
   };

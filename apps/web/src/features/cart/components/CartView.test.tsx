@@ -31,7 +31,12 @@ it("posts checkout as exactly the PlaceOrderRequest contract shape", async () =>
   );
 
   let captured: unknown;
-  const response: PlaceOrderResponse = { id: "o1", totalCents: 1800 };
+  const response: PlaceOrderResponse = {
+    id: "o1",
+    totalCents: 1800,
+    promoCode: "",
+    discountCents: 0,
+  };
   server.use(
     http.post("/api/orders", async ({ request }) => {
       captured = await request.json();

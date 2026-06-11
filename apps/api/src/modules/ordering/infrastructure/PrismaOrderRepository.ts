@@ -9,6 +9,8 @@ export class PrismaOrderRepository implements OrderRepository {
   async create(order: {
     customer: string;
     totalCents: number;
+    promoCode: string;
+    discountCents: number;
     userId?: string | null;
     lines: { menuItemId: string; quantity: number }[];
   }): Promise<string> {
@@ -16,6 +18,8 @@ export class PrismaOrderRepository implements OrderRepository {
       data: {
         customer: order.customer,
         totalCents: order.totalCents,
+        promoCode: order.promoCode,
+        discountCents: order.discountCents,
         userId: order.userId ?? null,
         items: {
           create: order.lines.map((l) => ({ menuItemId: l.menuItemId, quantity: l.quantity })),

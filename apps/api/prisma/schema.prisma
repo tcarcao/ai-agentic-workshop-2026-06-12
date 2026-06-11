@@ -35,13 +35,15 @@ model MenuItem {
 }
 
 model Order {
-  id         String      @id @default(cuid())
-  createdAt  DateTime    @default(now())
-  customer   String
-  totalCents Int
-  items      OrderItem[]
-  user       User?       @relation(fields: [userId], references: [id])
-  userId     String?
+  id            String      @id @default(cuid())
+  createdAt     DateTime    @default(now())
+  customer      String
+  totalCents    Int
+  promoCode     String      @default("")
+  discountCents Int         @default(0)
+  items         OrderItem[]
+  user          User?       @relation(fields: [userId], references: [id])
+  userId        String?
 }
 
 model OrderItem {

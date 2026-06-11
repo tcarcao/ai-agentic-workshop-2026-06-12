@@ -35,6 +35,10 @@ export interface Order {
   customer: string;
   createdAt: string;
   totalCents: number;
+  /** Server-applied promo code (empty string when none). */
+  promoCode: string;
+  /** Server-computed discount in cents (0 when no/unknown code). */
+  discountCents: number;
   lines: OrderLine[];
   userId: string | null;
 }
@@ -76,9 +80,15 @@ export interface ClaimOrdersRequest {
 export interface PlaceOrderRequest {
   customer: string;
   items: { menuItemId: string; quantity: number }[];
+  /** Optional promo code; the server validates and applies any discount. */
+  promoCode?: string;
 }
 
 export interface PlaceOrderResponse {
   id: string;
   totalCents: number;
+  /** Server-applied promo code (empty string when none). */
+  promoCode: string;
+  /** Server-computed discount in cents (0 when no/unknown code). */
+  discountCents: number;
 }

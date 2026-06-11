@@ -37,6 +37,8 @@ export interface Order {
   customer: string;
   createdAt: Date;
   totalCents: number;
+  promoCode: string;
+  discountCents: number;
   lines: OrderLine[];
   userId: string | null;
 }
