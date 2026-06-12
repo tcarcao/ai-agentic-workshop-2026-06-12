@@ -44,6 +44,15 @@ export function createApp(
 ) {
   const app = new Hono<{ Variables: Variables }>();
 
+  // --- centralized error logging: a 500 must never be silent ---
+  // Routes translate known domain errors to 4xx; anything that reaches here is
+  // unexpected (e.g. a DB/Prisma failure), so log the full error + the request
+  // that caused it before returning a generic 500.
+  app.onError((err, c) => {
+    console.error(`[api] ${c.req.method} ${c.req.path} → 500:`, err);
+    return c.json({ error: "Internal Server Error" }, 500);
+  });
+
   // --- identity at the edge: resolve userId (or null) from the session cookie ---
   app.use("*", async (c, next) => {
     const token = getCookie(c, SESSION_COOKIE);
