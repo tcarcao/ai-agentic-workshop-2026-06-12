@@ -69,10 +69,6 @@ export interface AuthResponse {
   user: User;
 }
 
-export interface MergeFavoritesRequest {
-  restaurantIds: string[];
-}
-
 export interface ClaimOrdersRequest {
   orderIds: string[];
 }

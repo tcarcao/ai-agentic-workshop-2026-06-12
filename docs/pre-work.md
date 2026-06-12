@@ -35,7 +35,7 @@ npm run db:setup
 ```bash
 npm run dev
 ```
-This starts the **API** (`http://localhost:3001`) and the **web app** (`http://localhost:5173`) together. Open <http://localhost:5173>. You should see a food-delivery app with several restaurants. Click into one, add a dish to your cart, and place an order — if the confirmation appears, you're fully set. ✅ Optionally, create an account (email + password) to see your favorites and order history sync across devices; ordering works without an account too.
+This starts the **API** (`http://localhost:3001`) and the **web app** (`http://localhost:5173`) together. Open <http://localhost:5173>. You should see a food-delivery app with several restaurants. Click into one, add a dish to your cart, and place an order — if the confirmation appears, you're fully set. ✅ Optionally, create an account (email + password) to see your order history sync across devices; ordering works without an account too.
 
 ## If something breaks
 - Reply to this email with the error and your OS (most of you are on **Windows** — that's expected and supported).

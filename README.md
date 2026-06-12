@@ -20,7 +20,7 @@ npm run db:setup     # migrate + seed the SQLite db (in apps/api)
 npm run dev          # api → http://localhost:3001 · web → http://localhost:5173
 ```
 
-Open <http://localhost:5173>, click a restaurant, add a dish, and place an order. The app also supports optional accounts (email + password; in dev, the email confirmation code is shown on the confirm screen) — create one to see your favorites and order history sync across devices. Anonymous checkout still works with no account required.
+Open <http://localhost:5173>, click a restaurant, add a dish, and place an order. The app also supports optional accounts (email + password; in dev, the email confirmation code is shown on the confirm screen) — create one to see your order history sync across devices. Anonymous checkout still works with no account required.
 
 ## Scripts (run from the repo root)
 
